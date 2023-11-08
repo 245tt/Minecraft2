@@ -14,6 +14,8 @@ void Input::SetKey(int Key, KeyAction action)
 	for (auto& [key, value] : keyState)
 		if (key == Key)
 			value = action;
+
+	
 }
 
 bool System::Input::IsKeyDown(int Key)

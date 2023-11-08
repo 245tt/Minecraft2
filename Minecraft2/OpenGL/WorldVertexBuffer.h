@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include "glad.h"
+#include "VertexBuffer.h"
 
 class WorldVertexBuffer
 {
@@ -15,6 +16,7 @@ public:
 
 
 private:
-
+	unsigned int vbo;
+	unsigned int ebo;
 };
 

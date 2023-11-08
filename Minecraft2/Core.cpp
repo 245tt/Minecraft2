@@ -8,6 +8,8 @@
 #include "Game/ChunkBuilder.h"
 #include "Game/VoxelMesh.h"
 #include "Game/World.h"
+#include "Game/WorldRayCast.h"
+#include "OpenGL/WorldVertexBuffer.h"
 
 float v_vertices[] =
 {
@@ -108,7 +110,7 @@ void Core::Run()
     builder.GenerateMesh(&chunk,&mesh);
 	
 
-    VertexBuffer* buffer = new VertexBuffer();
+    WorldVertexBuffer* buffer = new WorldVertexBuffer();
     VertexBuffer* cube = new VertexBuffer();
 
 	std::vector<float> meshData = mesh.GenVertexData();
@@ -140,8 +142,28 @@ void Core::Run()
         if (m_window.left) camera->MoveCamera(Left,     0.1);
         if (m_window.right) camera->MoveCamera(Right,   0.1);
 
-		//std::cout << camera->position.x << ", " << camera->position.y << ", " << camera->position.z << std::endl;
-        
+		RayCastResult result;
+		RayCastWorld(&result,camera->front,camera->position,&chunk,5.0f);
+		        
+		if (System::Input::IsKeyPressed(72)&& result.hit)
+		{
+			std::cout << "breaking block" << std::endl;
+			glm::ivec3 pos = result.blockPos;
+			chunk.blocks[pos.x][pos.y][pos.z] = 0;
+			builder.GenerateMesh(&chunk, &mesh);
+			std::vector<float> meshData = mesh.GenVertexData();
+			buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
+		}
+
+		if (System::Input::IsKeyDown(67) && result.hit)
+		{
+			//std::cout << FaceToString(result.faceDirection) << std::endl;
+			glm::ivec3 target = result.blockPos + FaceToDir(result.faceDirection);
+			chunk.blocks[target.x][target.y][target.z] = 1;
+			builder.GenerateMesh(&chunk, &mesh);
+			std::vector<float> meshData = mesh.GenVertexData();
+			buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
+		}
         glm::mat4 model = glm::mat4(1.0f);
         camera->SetRotation(glm::vec3(m_window.pitch, m_window.yaw,0));
 
@@ -154,7 +176,7 @@ void Core::Run()
 		skyboxShader->SetMat4("projection",camera->GetProjectionMatrix());
 		skyboxShader->SetMat4("view", glm::mat4(glm::mat3(camera->GetViewMatrix())));
 		m_renderer.Prepare();
-        m_renderer.Draw(buffer, shader->id);
+        m_renderer.Draw(buffer->vao,buffer->size, shader->id);
 		m_renderer.DrawCubeMap(cube,skybox, skyboxShader->id);
 
         m_window.Update();

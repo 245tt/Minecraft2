@@ -19,11 +19,11 @@ private:
 	float aspectRatio = 0;
 	float near = 0;
 	float far = 0;
-	glm::vec3 front;
 	glm::vec3 right;
 	glm::vec3 up;
 	void UpdateLookDir();
 public:
+	glm::vec3 front;
 	Camera(float fov,float aspectRatio,float nearPlane,float farPlane);
 	glm::mat4 GetViewMatrix();
 	glm::mat4 GetProjectionMatrix();

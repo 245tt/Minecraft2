@@ -4,6 +4,9 @@ WorldVertexBuffer::WorldVertexBuffer()
 {
 	this->vao = 0;
 	this->size = 0;
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
 }
 
 WorldVertexBuffer::~WorldVertexBuffer()
@@ -13,13 +16,9 @@ WorldVertexBuffer::~WorldVertexBuffer()
 
 void WorldVertexBuffer::BindData(float* vertices, unsigned int* indices, unsigned int indicesSize, unsigned int vertDataCount)
 {
-	unsigned int vbo, ebo;
 
-	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -35,15 +34,13 @@ void WorldVertexBuffer::BindData(float* vertices, unsigned int* indices, unsigne
 	glEnableVertexAttribArray(1);
 
 	//face brightness
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)(4 * sizeof(float)));
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glDeleteBuffers(1, &vbo);
-	glDeleteBuffers(1, &ebo);
 	this->size = indicesSize;
 	std::cout << "created buffer size of: " << size << std::endl;
 }

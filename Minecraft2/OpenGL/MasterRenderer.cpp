@@ -11,16 +11,16 @@ MasterRenderer::~MasterRenderer()
 }
 
 
-void MasterRenderer::Draw(VertexBuffer* buffer,unsigned int shader)
+void MasterRenderer::Draw(int vao,int size,unsigned int shader)
 {
 
 
 	glUseProgram(shader);
-	glBindVertexArray(buffer->vao);
+	glBindVertexArray(vao);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	glDrawElements(GL_TRIANGLES,buffer->size,GL_UNSIGNED_INT,0);
+	glDrawElements(GL_TRIANGLES,size,GL_UNSIGNED_INT,0);
 
 	//glDrawArrays(GL_TRIANGLES,0,buffer->size);
 }

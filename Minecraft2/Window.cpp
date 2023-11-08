@@ -86,6 +86,8 @@ void Window::Init()
 	std::cout << OGLversion << std::endl;
 	glViewport(0, 0, 1600, 900);
 	glEnable(GL_DEPTH_TEST);
+	//glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
 	active = true;
 }
 

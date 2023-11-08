@@ -24,6 +24,9 @@ void ChunkBuilder::AddTopFace(glm::i32vec3 blockPos, VoxelMesh* mesh,unsigned in
 		
 		mesh->vertexTextureCoords.push_back(texCoords[i+0]);
 		mesh->vertexTextureCoords.push_back(texCoords[i+1]);
+
+		mesh->faceBrightness.push_back(1.0f);
+
 		i += 2;
 	}
 	//adding indices
@@ -64,6 +67,8 @@ void ChunkBuilder::AddBottomFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigne
 		//and its uv maps
 		mesh->vertexTextureCoords.push_back(texCoords[i + 0]);
 		mesh->vertexTextureCoords.push_back(texCoords[i + 1]);
+
+		mesh->faceBrightness.push_back(.2f);
 		i += 2;
 	}
 	//adding indices
@@ -81,7 +86,7 @@ void ChunkBuilder::AddBottomFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigne
 	size = size + 4;
 }
 
-void ChunkBuilder::AddFrontFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
+void ChunkBuilder::AddNorthFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
 {
 	glm::vec4 uvCoords = TextureAtlas::GetUVCoordsFromBlockID(blockID);
 
@@ -105,6 +110,8 @@ void ChunkBuilder::AddFrontFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned
 		//and its uv maps
 		mesh->vertexTextureCoords.push_back(texCoords[i + 0]);
 		mesh->vertexTextureCoords.push_back(texCoords[i + 1]);
+
+		mesh->faceBrightness.push_back(0.6f);
 		i += 2;
 	}
 	//adding indices
@@ -122,7 +129,7 @@ void ChunkBuilder::AddFrontFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned
 	size = size + 4;
 }
 
-void ChunkBuilder::AddBackFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
+void ChunkBuilder::AddSouthFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
 {
 	glm::vec4 uvCoords = TextureAtlas::GetUVCoordsFromBlockID(blockID);
 
@@ -145,6 +152,8 @@ void ChunkBuilder::AddBackFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned 
 		//and its uv maps
 		mesh->vertexTextureCoords.push_back(texCoords[i + 0]);
 		mesh->vertexTextureCoords.push_back(texCoords[i + 1]);
+
+		mesh->faceBrightness.push_back(0.6f);
 		i += 2;
 	}
 	//adding indices
@@ -162,7 +171,7 @@ void ChunkBuilder::AddBackFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned 
 	size = size + 4;
 }
 
-void ChunkBuilder::AddLeftFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
+void ChunkBuilder::AddWestFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
 {
 	glm::vec4 uvCoords = TextureAtlas::GetUVCoordsFromBlockID(blockID);
 
@@ -185,6 +194,8 @@ void ChunkBuilder::AddLeftFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned 
 		//and its uv maps
 		mesh->vertexTextureCoords.push_back(texCoords[i + 0]);
 		mesh->vertexTextureCoords.push_back(texCoords[i + 1]);
+
+		mesh->faceBrightness.push_back(0.4f);
 		i += 2;
 	}
 	//adding indices
@@ -202,7 +213,7 @@ void ChunkBuilder::AddLeftFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned 
 	size = size + 4;
 }
 
-void ChunkBuilder::AddRightFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
+void ChunkBuilder::AddEastFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID)
 {
 	glm::vec4 uvCoords = TextureAtlas::GetUVCoordsFromBlockID(blockID);
 
@@ -225,6 +236,8 @@ void ChunkBuilder::AddRightFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned
 		//and its uv maps
 		mesh->vertexTextureCoords.push_back(texCoords[i + 0]);
 		mesh->vertexTextureCoords.push_back(texCoords[i + 1]);
+
+		mesh->faceBrightness.push_back(0.4f);
 		i += 2;
 	}
 	//adding indices
@@ -244,6 +257,11 @@ void ChunkBuilder::AddRightFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned
 
 void ChunkBuilder::GenerateMesh(Chunk* chunk, VoxelMesh* mesh)
 {
+	mesh->faceBrightness.clear();
+	mesh->indices.clear();
+	mesh->vertexPositions.clear();
+	mesh->vertexTextureCoords.clear();
+	size = 0;
 	for (int x = 0; x < 32; x++)
 	{
 		for (int y = 0; y < 32; y++)
@@ -271,57 +289,57 @@ void ChunkBuilder::GenerateMesh(Chunk* chunk, VoxelMesh* mesh)
 					}
 					
 					if (z > 30) { //to prevent array out of bounds error
-						AddFrontFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+						AddNorthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 					}
 					else {
 						if (!BlockList[chunk->blocks[x][y][z+1]].opaque) {
-							AddFrontFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+							AddNorthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 						}
 					}
 						
 					if (z < 1) { //to prevent array out of bounds error
-						AddBackFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+						AddSouthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 					}
 					else {
 						if (!BlockList[chunk->blocks[x][y][z - 1]].opaque) {
-							AddBackFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+							AddSouthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 						}
 					}
 					
 
-					if (z > 30) { //to prevent array out of bounds error
-						AddFrontFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
-					}
-					else {
-						if (!BlockList[chunk->blocks[x][y][z+1]].opaque) {
-							AddFrontFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
-						}
-					}
-						
-					if (z < 1) { //to prevent array out of bounds error
-						AddBackFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
-					}
-					else {
-						if (!BlockList[chunk->blocks[x][y][z - 1]].opaque) {
-							AddBackFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
-						}
-					}
+					//if (z > 30) { //to prevent array out of bounds error
+					//	AddNorthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+					//}
+					//else {
+					//	if (!BlockList[chunk->blocks[x][y][z+1]].opaque) {
+					//		AddNorthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+					//	}
+					//}
+					//	
+					//if (z < 1) { //to prevent array out of bounds error
+					//	AddSouthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+					//}
+					//else {
+					//	if (!BlockList[chunk->blocks[x][y][z - 1]].opaque) {
+					//		AddSouthFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+					//	}
+					//}
 					
 					if (x > 30) { //to prevent array out of bounds error
-						AddRightFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+						AddEastFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 					}
 					else {
 						if (!BlockList[chunk->blocks[x+1][y][z ]].opaque) {
-							AddRightFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+							AddEastFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 						}
 					}
 
 					if (x < 1) { //to prevent array out of bounds error
-						AddLeftFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+						AddWestFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 					}
 					else {
 						if (!BlockList[chunk->blocks[x-1][y][z]].opaque) {
-							AddLeftFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
+							AddWestFace(glm::i32vec3(x, y, z), mesh, chunk->blocks[x][y][z]);
 						}
 					}
 				}

@@ -11,10 +11,10 @@ static class ChunkBuilder
 private:
 	static void AddTopFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
 	static void AddBottomFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
-	static void AddFrontFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
-	static void AddBackFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
-	static void AddLeftFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
-	static void AddRightFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
+	static void AddNorthFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
+	static void AddSouthFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
+	static void AddWestFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
+	static void AddEastFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned int blockID);
 
 public:
 	static void GenerateMesh(Chunk* chunk,VoxelMesh* mesh);

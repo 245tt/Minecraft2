@@ -2,10 +2,12 @@
 
 std::vector<float> VoxelMesh::GenVertexData()
 {
-
+    int size = vertexPositions.size() / 3;
+    
     std::vector<float>vdata;
+    vdata.reserve(size * 6);
 
-    for (int i = 0; i < vertexPositions.size()/3; i++) 
+    for (int i = 0; i < size; i++)
     {
 
         //vertex positions
@@ -18,8 +20,7 @@ std::vector<float> VoxelMesh::GenVertexData()
         vdata.push_back(vertexTextureCoords[2 * i+1]);
 
         //face brightness
-        //vdata.push_back(faceBrightness[i]);
+        vdata.push_back(faceBrightness[i]);
     }
-    std::vector<float>data(vdata);
     return vdata;
 }

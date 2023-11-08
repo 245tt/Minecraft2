@@ -9,7 +9,7 @@ public:
 	MasterRenderer();
 	~MasterRenderer();
 
-	void Draw(VertexBuffer* buffer,unsigned int shader);
+	void Draw(int vao, int size,unsigned int shader);
 	void DrawCubeMap(VertexBuffer* buffer, CubeMap* cubeMap,unsigned int shader);
 	void Prepare();
 private:
