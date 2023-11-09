@@ -10,6 +10,7 @@
 #include "Game/World.h"
 #include "Game/WorldRayCast.h"
 #include "OpenGL/WorldVertexBuffer.h"
+#include <thread>
 
 float v_vertices[] =
 {
@@ -100,21 +101,30 @@ void Core::Run()
 {
 
 	World world;
-
-    Chunk chunk;
-    chunk.Populate();
-
-    VoxelMesh mesh;
+	//world.GenerateChunk({0,0,0});
+	//world.GenerateChunk({ 0,0,1 });
+	for (size_t x = 0; x < 10; x++)
+	{
+		for (size_t z = 0; z < 10; z++)
+		{
+			world.GenerateChunk({ x,0,z });
+			//world.GenerateChunk({ x,1,z });
+		}
+	}
+    //Chunk chunk;
+    //chunk.Populate();
 
     ChunkBuilder builder;
-    builder.GenerateMesh(&chunk,&mesh);
 	
 
-    WorldVertexBuffer* buffer = new WorldVertexBuffer();
+    //WorldVertexBuffer* buffer = new WorldVertexBuffer();
     VertexBuffer* cube = new VertexBuffer();
+	std::vector<WorldVertexBuffer*> worldBuffers;
 
-	std::vector<float> meshData = mesh.GenVertexData();
-    buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
+    builder.GenerateWorldMesh(&world, worldBuffers);
+
+	//std::vector<float> meshData = mesh.GenVertexData();
+    //buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
     cube->BindData(v_vertices, v_indices,sizeof(v_indices)/sizeof(v_indices[0]), sizeof(v_vertices) / sizeof(v_vertices[0]));
 
     Camera* camera = new Camera(90, 16.0f/9 ,0.1f,10000.0f);
@@ -143,26 +153,35 @@ void Core::Run()
         if (m_window.right) camera->MoveCamera(Right,   0.1);
 
 		RayCastResult result;
-		RayCastWorld(&result,camera->front,camera->position,&chunk,5.0f);
-		        
+		RayCastWorld(&result,camera->front,camera->position,&world,5.0f);
+		if (System::Input::IsKeyPressed(72)) 
+		{
+			//std::cout << result.hitPos.x << " " << result.hitPos.x << " " << result.hitPos.x << std::endl;
+		}
 		if (System::Input::IsKeyPressed(72)&& result.hit)
 		{
 			std::cout << "breaking block" << std::endl;
 			glm::ivec3 pos = result.blockPos;
-			chunk.blocks[pos.x][pos.y][pos.z] = 0;
-			builder.GenerateMesh(&chunk, &mesh);
-			std::vector<float> meshData = mesh.GenVertexData();
-			buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
+			world.SetBlockOnWorldCoords(pos, 0);
+			auto t0 = std::chrono::high_resolution_clock::now();
+			builder.UpdateChunkMesh(&world,worldBuffers);
+			auto t1 = std::chrono::high_resolution_clock::now();
+
+			std::chrono::duration< double > fs = t1 - t0;
+			std::chrono::milliseconds d = std::chrono::duration_cast<std::chrono::milliseconds>(fs);
+
+			std::cout << fs.count() << "s\n";
+			std::cout << d.count() << "ms\n";
+			//std::vector<float> meshData = mesh.GenVertexData();
+			//buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
 		}
 
 		if (System::Input::IsKeyDown(67) && result.hit)
 		{
 			//std::cout << FaceToString(result.faceDirection) << std::endl;
 			glm::ivec3 target = result.blockPos + FaceToDir(result.faceDirection);
-			chunk.blocks[target.x][target.y][target.z] = 1;
-			builder.GenerateMesh(&chunk, &mesh);
-			std::vector<float> meshData = mesh.GenVertexData();
-			buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
+			world.SetBlockOnWorldCoords(target, 2);
+			builder.UpdateChunkMesh(&world, worldBuffers);
 		}
         glm::mat4 model = glm::mat4(1.0f);
         camera->SetRotation(glm::vec3(m_window.pitch, m_window.yaw,0));
@@ -176,8 +195,16 @@ void Core::Run()
 		skyboxShader->SetMat4("projection",camera->GetProjectionMatrix());
 		skyboxShader->SetMat4("view", glm::mat4(glm::mat3(camera->GetViewMatrix())));
 		m_renderer.Prepare();
-        m_renderer.Draw(buffer->vao,buffer->size, shader->id);
 		m_renderer.DrawCubeMap(cube,skybox, skyboxShader->id);
+        //m_renderer.Draw(buffer->vao,buffer->size, shader->id);
+		for (int i = 0; i < worldBuffers.size(); i++) 
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model,(glm::vec3)(world.activeChunks[i]->position*32));
+			glm::mat4 mvp = camera->GetProjectionMatrix() * camera->GetViewMatrix() * model;
+			shader->SetMat4("mvp", mvp);
+			m_renderer.Draw(worldBuffers[i]->vao, worldBuffers[i]->size, shader->id);
+		}
 
         m_window.Update();
         m_window.SwapBuffer();

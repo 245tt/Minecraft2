@@ -1,7 +1,7 @@
 #include "WorldRayCast.h"
 
 
-void RayCastWorld(RayCastResult* result, glm::vec3 Direction, glm::vec3 startPosition, Chunk* world, float distance)
+void RayCastWorld(RayCastResult* result, glm::vec3 Direction, glm::vec3 startPosition, World* world, float distance)
 {
 	int numberOfSteps = distance / STEP;
 	glm::vec3 checkpoint = startPosition;
@@ -77,17 +77,19 @@ void RayCastWorld(RayCastResult* result, glm::vec3 Direction, glm::vec3 startPos
 
 }
 
-bool CheckPoint(glm::vec3 position, Chunk* world)
+bool CheckPoint(glm::vec3 position, World* world)
 {
-	int gridX = (int)round(position.x);
-	int gridY = (int)round(position.y);
-	int gridZ = (int)round(position.z);
-	if (gridX >= 0 && gridX < 32 && gridY >= 0 && gridY < 32 && gridZ >= 0 && gridZ < 32) 
+	int WorldGridX = (int)round(position.x);
+	int WorldGridY = (int)round(position.y);
+	int WorldGridZ = (int)round(position.z);
+
+
+	if (world->GetBlockIdFromWorldCoords({WorldGridX,WorldGridY,WorldGridZ}) != 0)
 	{
-		if (world->blocks[gridX][gridY][gridZ] != 0) 
-		{
-			return true;
-		}
+		return true;
 	}
+
+
 	return false;
+
 }

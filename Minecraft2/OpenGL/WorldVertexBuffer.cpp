@@ -12,6 +12,8 @@ WorldVertexBuffer::WorldVertexBuffer()
 WorldVertexBuffer::~WorldVertexBuffer()
 {
 	glDeleteBuffers(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ebo);
 }
 
 void WorldVertexBuffer::BindData(float* vertices, unsigned int* indices, unsigned int indicesSize, unsigned int vertDataCount)

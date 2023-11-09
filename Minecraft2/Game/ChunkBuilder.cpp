@@ -255,8 +255,23 @@ void ChunkBuilder::AddEastFace(glm::i32vec3 blockPos, VoxelMesh* mesh, unsigned 
 	size = size + 4;
 }
 
-void ChunkBuilder::GenerateMesh(Chunk* chunk, VoxelMesh* mesh)
+void ChunkBuilder::UpdateChunkMesh(World* world, std::vector<WorldVertexBuffer*>& buffers) 
 {
+	for (int i = 0; i < world->activeChunks.size(); i++)
+	{
+		if (world->activeChunks[i]->needsUpdate) {
+			
+			GenerateMesh(world->activeChunks[i], buffers[i]);
+			world->activeChunks[i]->needsUpdate = false;
+		}
+	}
+}
+
+
+void ChunkBuilder::GenerateMesh(Chunk* chunk,WorldVertexBuffer* worldBuf)
+{
+	VoxelMesh* mesh = new VoxelMesh();
+
 	mesh->faceBrightness.clear();
 	mesh->indices.clear();
 	mesh->vertexPositions.clear();
@@ -346,4 +361,24 @@ void ChunkBuilder::GenerateMesh(Chunk* chunk, VoxelMesh* mesh)
 			}
 		}
 	}
+	std::vector<float> meshData = mesh->GenVertexData();
+	worldBuf->BindData(&meshData[0], &mesh->indices[0], mesh->indices.size(), meshData.size());
+	delete mesh;
+}
+
+void ChunkBuilder::GenerateWorldMesh(World* world, std::vector<WorldVertexBuffer*>& buffers)
+{
+	for (int i = 0; i < buffers.size(); i++) 
+	{
+		delete buffers[i];
+	}
+	buffers.clear();
+	buffers.reserve(world->activeChunks.size());
+	for (int i = 0; i < world->activeChunks.size();i++) 
+	{
+		WorldVertexBuffer* buf = new WorldVertexBuffer();
+		GenerateMesh(world->activeChunks[i], buf);
+		buffers.push_back(buf);
+	}
+
 }

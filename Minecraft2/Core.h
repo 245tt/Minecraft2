@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "OpenGL\MasterRenderer.h"
 #include "System/Input.h"
+#include <chrono>
 
 class Core
 {

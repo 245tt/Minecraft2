@@ -17,5 +17,5 @@ struct RayCastResult
 
 };
 
-void RayCastWorld(RayCastResult* result,glm::vec3 Direction,glm::vec3 startPosition,Chunk* world,float distance);
-bool CheckPoint(glm::vec3 position, Chunk* world);
+void RayCastWorld(RayCastResult* result,glm::vec3 Direction,glm::vec3 startPosition,World* world,float distance);
+bool CheckPoint(glm::vec3 position, World* world);
