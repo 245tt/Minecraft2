@@ -39,6 +39,7 @@ private:
 	
 protected:
 	//void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+public:
 	GLFWwindow* window;
 };
 

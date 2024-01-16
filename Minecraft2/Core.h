@@ -24,6 +24,8 @@ public:
 
 protected:
 	static Core* singleton;
+	double lastTime;
+	double currentTime;
 
 
 };

@@ -44,5 +44,5 @@ void WorldVertexBuffer::BindData(float* vertices, unsigned int* indices, unsigne
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	this->size = indicesSize;
-	std::cout << "created buffer size of: " << size << std::endl;
+	//std::cout << "created buffer size of: " << size << std::endl;
 }

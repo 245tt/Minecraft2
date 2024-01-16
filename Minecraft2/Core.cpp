@@ -97,8 +97,12 @@ void Core::InitModules()
 	m_window.Init();
 	System::Input::Init();
 }
+
+
+
 void Core::Run() 
 {
+
 
 	World world;
 	//world.GenerateChunk({0,0,0});
@@ -146,11 +150,16 @@ void Core::Run()
 
     while (m_window.active) {
         
-        
-        if (m_window.front) camera->MoveCamera(Forward, 0.1);
-        if (m_window.back) camera->MoveCamera(Back,     0.1);
-        if (m_window.left) camera->MoveCamera(Left,     0.1);
-        if (m_window.right) camera->MoveCamera(Right,   0.1);
+		currentTime = glfwGetTime();
+		double delta = currentTime - lastTime;
+		lastTime = currentTime;
+
+		
+
+        if (m_window.front) camera->MoveCamera(Forward, 10* delta);
+        if (m_window.back) camera->MoveCamera(Back,     10* delta);
+        if (m_window.left) camera->MoveCamera(Left,     10* delta);
+        if (m_window.right) camera->MoveCamera(Right,   10* delta);
 
 		RayCastResult result;
 		RayCastWorld(&result,camera->front,camera->position,&world,5.0f);
@@ -158,7 +167,7 @@ void Core::Run()
 		{
 			//std::cout << result.hitPos.x << " " << result.hitPos.x << " " << result.hitPos.x << std::endl;
 		}
-		if (System::Input::IsKeyPressed(72)&& result.hit)
+		if (glfwGetKey(m_window.window, 72) == GLFW_PRESS && result.hit)
 		{
 			std::cout << "breaking block" << std::endl;
 			glm::ivec3 pos = result.blockPos;
@@ -176,7 +185,7 @@ void Core::Run()
 			//buffer->BindData(&meshData[0], &mesh.indices[0], mesh.indices.size(), meshData.size());
 		}
 
-		if (System::Input::IsKeyDown(67) && result.hit)
+		if (glfwGetKey(m_window.window, 67) == GLFW_PRESS && result.hit)
 		{
 			//std::cout << FaceToString(result.faceDirection) << std::endl;
 			glm::ivec3 target = result.blockPos + FaceToDir(result.faceDirection);
@@ -193,7 +202,7 @@ void Core::Run()
 
 		skyboxShader->Use();
 		skyboxShader->SetMat4("projection",camera->GetProjectionMatrix());
-		skyboxShader->SetMat4("view", glm::mat4(glm::mat3(camera->GetViewMatrix())));
+		skyboxShader->SetMat4("view", camera->GetViewMatrix());
 		m_renderer.Prepare();
 		m_renderer.DrawCubeMap(cube,skybox, skyboxShader->id);
         //m_renderer.Draw(buffer->vao,buffer->size, shader->id);

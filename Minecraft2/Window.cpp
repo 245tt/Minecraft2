@@ -22,7 +22,7 @@ void WindowResized(GLFWwindow* window, int width, int height)
 
 void key_callback(GLFWwindow* window, int Key, int scancode, int action, int mods) 
 {
-	//std::cout << scancode << ", "<< action << std::endl;
+	std::cout << scancode << ", "<< action << std::endl;
 	
 	System::KeyAction keyAction = System::Input::GetKey(Key);
 	
@@ -31,15 +31,21 @@ void key_callback(GLFWwindow* window, int Key, int scancode, int action, int mod
 		keyAction = System::KeyAction::Released;
 		
 	}
-	else if (action == 1) {
-		keyAction = System::KeyAction::Pressed;
-		
-	}
 	else if (action == 2) {
 		keyAction = System::KeyAction::Holded;
 		
 	}
-	
+
+	if (keyAction == System::KeyAction::Pressed && action == 1)
+	{
+		keyAction = System::KeyAction::Holded;
+	}
+	if (keyAction == System::KeyAction::Released && action == 1) 
+	{
+		keyAction = System::KeyAction::Pressed;
+	}
+
+	std::cout << keyAction << std::endl;
 	//std::cout << glfwGetKeyName(Key,-1) << ", " << keyAction << std::endl;
 	
 	System::Input::SetKey(Key,keyAction);
